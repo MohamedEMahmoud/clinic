@@ -1,5 +1,5 @@
 export declare enum RoleType {
-    Trainee = "trainee",
-    Coach = "coach",
+    Doctor = "doctor",
+    Patient = "patient",
     Admin = "admin"
 }
