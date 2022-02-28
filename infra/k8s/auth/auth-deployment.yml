@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: mohamedemad1/auth
+          env:
+            - name: MONGO_URI
+              value: mongodb://auth-mongo-cluster-ip-service:27017/auth
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: CLOUDINARY_NAME
+              value: micro-services
+            - name: CLOUDINARY_API_KEY
+              value: "467668724553657"
+            - name: CLOUDINARY_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cloudinary-api-secret
+                  key: CLOUDINARY_API_SECRET
+            - name: MAIL_USER
+              value: "microservice.nodemailer@gmail.com"
+            - name: MAIL_SERVER_PORT
+              value: "465"
+            - name: CLIENT_ID
+              value: "1070496040691-lqta83gpoujs4ol1l4nrqnrt1op1k117.apps.googleusercontent.com"
+            - name: REFRESH_TOKEN
+              value: "1//04AEdLW3NmfXPCgYIARAAGAQSNwF-L9IrByjVoWpXf-h01Bcnbzj3apRGtOS232-CAq6F09PW00xK0iyi-3-LAFVr25cTgHnDWLM"
+            - name: REDIRECT_URI
+              value: "https://developers.google.com/oauthplayground"
+            - name: MAIL_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: mail-api-secret-pass
+                  key: MAIL_PASS
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: client-api-secret
+                  key: CLIENT_SECRET
+            - name: NATS_CLUSTER_ID
+              value: clinic
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: http://nats-cluster-ip-service:4222
