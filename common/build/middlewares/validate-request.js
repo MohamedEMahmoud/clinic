@@ -5,7 +5,7 @@ const __1 = require("..");
 const validateRequest = (req, res, next) => {
     const specialCharactersValidator = /[ `!@#$%^&*()+\=\[\]{};':"\\|,.<>\/?~]/;
     const emailValidation = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    const fields = ["gender", "username", "password", "email"];
+    const fields = ["gender", "username", "password", "email", "phone", "role", "day", "month", "year"];
     fields.map(field => {
         if (field in req.body) {
             if (field === 'username') {

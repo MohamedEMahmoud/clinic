@@ -26,3 +26,4 @@ export * from "./events/user-deleted-event";
 export * from './types/gender-type';
 export * from './types/role-type';
 export * from "./types/picture-type";
+export * from "./types/status-type";
