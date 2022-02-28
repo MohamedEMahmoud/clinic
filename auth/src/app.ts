@@ -14,7 +14,7 @@ import { checkPasswordKeyRouter } from "./routes/check-password-key";
 import { activeRouter } from "./routes/active";
 import { updateProfileRouter } from "./routes/update-profile";
 import { deleteProfileRouter } from "./routes/delete-profile";
-
+import { showAllDoctorsRouter } from "./routes/doctor/show_doctors";
 const app = express();
 app.set('trust proxy', true);
 app.use([
@@ -32,6 +32,7 @@ app.use([
   activeRouter,
   updateProfileRouter,
   deleteProfileRouter,
+  showAllDoctorsRouter
 ]);
 
 
