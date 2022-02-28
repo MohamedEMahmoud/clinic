@@ -1,4 +1,4 @@
-export enum StatusType {
+export declare enum Status {
     Reserved = "reserved",
     Missed = "missed",
     Finished = "finished",

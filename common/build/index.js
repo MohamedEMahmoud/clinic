@@ -33,3 +33,4 @@ __exportStar(require("./events/user-deleted-event"), exports);
 __exportStar(require("./types/gender-type"), exports);
 __exportStar(require("./types/role-type"), exports);
 __exportStar(require("./types/picture-type"), exports);
+__exportStar(require("./types/status-type"), exports);
