@@ -3,6 +3,5 @@ export declare enum StatusType {
     Missed = "missed",
     Finished = "finished",
     Cancelled = "cancelled",
-    Approved = "approved",
-    Waiting = "waiting"
+    Approved = "approved"
 }

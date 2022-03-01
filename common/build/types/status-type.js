@@ -8,5 +8,4 @@ var StatusType;
     StatusType["Finished"] = "finished";
     StatusType["Cancelled"] = "cancelled";
     StatusType["Approved"] = "approved";
-    StatusType["Waiting"] = "waiting";
 })(StatusType = exports.StatusType || (exports.StatusType = {}));

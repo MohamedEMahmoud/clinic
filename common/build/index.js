@@ -29,6 +29,7 @@ __exportStar(require("./events/subjects"), exports);
 __exportStar(require("./events/user-created-event"), exports);
 __exportStar(require("./events/user-updated-event"), exports);
 __exportStar(require("./events/user-deleted-event"), exports);
+__exportStar(require("./events/appointment-created-event"), exports);
 // Types
 __exportStar(require("./types/gender-type"), exports);
 __exportStar(require("./types/role-type"), exports);

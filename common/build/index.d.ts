@@ -14,6 +14,7 @@ export * from "./events/subjects";
 export * from "./events/user-created-event";
 export * from "./events/user-updated-event";
 export * from "./events/user-deleted-event";
+export * from "./events/appointment-created-event";
 export * from './types/gender-type';
 export * from './types/role-type';
 export * from "./types/picture-type";
