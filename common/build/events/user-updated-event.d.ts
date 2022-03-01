@@ -4,6 +4,7 @@ export interface UserUpdatedEvent {
     subject: Subjects.UserUpdated;
     data: {
         id: string;
+        username?: string;
         email?: string;
         role?: RoleType;
         picture?: string;

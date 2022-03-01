@@ -4,7 +4,7 @@ export interface AppointmentCreatedEvent {
     subject: Subjects.AppointmentCreated;
     data: {
         id: string;
-        doctor: string;
-        patient: string;
+        doctorId: string;
+        patientId?: string;
     };
 }
