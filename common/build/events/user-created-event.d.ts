@@ -9,7 +9,6 @@ export interface UserCreatedEvent {
         picture: string;
         specialization: string;
         phone: string;
-        availableDate: string;
         version: number;
     };
 }
