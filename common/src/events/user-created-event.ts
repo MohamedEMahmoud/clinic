@@ -10,6 +10,8 @@ export interface UserCreatedEvent {
         picture: string;
         specialization: string;
         phone: string;
+        age: number;
+        username: string;
         version: number;
     };
 }
