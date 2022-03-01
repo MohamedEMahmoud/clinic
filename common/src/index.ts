@@ -19,6 +19,8 @@ export * from "./events/subjects";
 export * from "./events/user-created-event";
 export * from "./events/user-updated-event";
 export * from "./events/user-deleted-event";
+export * from "./events/appointment-created-event";
+
 
 
 

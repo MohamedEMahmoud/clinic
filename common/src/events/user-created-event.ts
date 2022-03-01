@@ -6,9 +6,11 @@ export interface UserCreatedEvent {
     data: {
         id: string;
         email: string;
-        picture: string;
-        coachId: string;
         role: RoleType;
+        picture: string;
+        specialization: string;
+        phone: string;
+        availableDate: string;
         version: number;
     };
 }

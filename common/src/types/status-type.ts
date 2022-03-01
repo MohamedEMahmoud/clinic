@@ -4,5 +4,4 @@ export enum StatusType {
     Finished = "finished",
     Cancelled = "cancelled",
     Approved = "approved",
-    Waiting = "waiting"
 }
