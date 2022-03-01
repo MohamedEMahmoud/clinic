@@ -5,5 +5,7 @@ export interface AppointmentCreatedEvent {
         id: string;
         doctorId: string;
         patientId?: string;
+        date?: string;
+        start_time?: string;
     };
 }
