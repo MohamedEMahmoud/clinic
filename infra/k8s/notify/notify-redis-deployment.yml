@@ -1,0 +1,16 @@
+apiVersion: app/v1
+metadata:
+  name: notify-redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notify-redis
+  template:
+    metadata:
+      labels:
+        app: notify-redis
+    spec:
+      containers:
+        - name: notify-redis
+          image: redis

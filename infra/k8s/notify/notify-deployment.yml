@@ -1,0 +1,27 @@
+apiVersion: app/v1
+metadata:
+  name: notify-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notify
+  template:
+    metadata:
+      labels:
+        app: notify
+    spec:
+      containers:
+        - name: notify
+          image: mohamedemad1/notify
+          env:
+            - name: REDIS_HOST
+              value: notify-redis-cluster-ip-service
+            - name: NATS_CLUSTER_ID
+              value: clinic
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: http://nats-cluster-ip-service:4222

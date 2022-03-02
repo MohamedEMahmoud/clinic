@@ -1,0 +1,12 @@
+apiVersion: app/v1
+metadata:
+  name: notify-redis-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    app: notify-redis
+  ports:
+    - name: db
+      protocol: TCP
+      port: 6397
+      targetPort: 6397
