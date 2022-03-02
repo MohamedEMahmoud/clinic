@@ -25,7 +25,6 @@ interface UserDoc extends mongoose.Document {
     picture: string;
     phone: string;
     role: RoleType;
-    rate: number;
     age: number;
     specialization: string;
     macAddress: { MAC: String; }[];
@@ -92,12 +91,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    rate: {
-        type: Number,
-        default: 0,
-        max: 5,
-        min: 0
-    },
     availableDates: {
         type: Array,
         default: []
@@ -131,11 +124,6 @@ const userSchema = new mongoose.Schema({
                 delete ret.password;
             if (ret.availableDates.length === 0) {
                 delete ret.availableDates;
-            } else {
-                ret.availableDates = ret.availableDates.map((data: any) => {
-                    const { date, start_time, end_time, _id: id } = data;
-                    return { date, start_time, end_time, id };
-                });
             }
         }
     },
