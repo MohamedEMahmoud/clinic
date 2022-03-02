@@ -6,6 +6,7 @@ export interface UserUpdatedEvent {
         id: string;
         username?: string;
         email?: string;
+        age?: number;
         role?: RoleType;
         picture?: string;
         specialization?: string;
