@@ -1,10 +1,17 @@
 import express, { Request, Response } from "express";
 import { Appointment } from "../../models/appointment.model";
-import { requireAuth, BadRequestError, upload, StatusType } from "@clinic-services/common";
+import { User } from "../../models/user.model";
+import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
 
 const router = express.Router();
 
-router.patch("/api/appointment/cancel", upload.none(), requireAuth, async (req: Request, res: Response) => {
+router.patch("/api/appointment/patient/cancel", upload.none(), requireAuth, async (req: Request, res: Response) => {
+
+    const patient = await User.findById(req.currentUser!.id);
+
+    if (!patient || patient.role !== RoleType.Patient) {
+        throw new BadRequestError("You don't have this permission");
+    }
 
     if (!req.query.appointmentId) {
         throw new BadRequestError("Appointment ID is required");
@@ -17,7 +24,7 @@ router.patch("/api/appointment/cancel", upload.none(), requireAuth, async (req: 
     }
 
     appointment.dataStatus = {
-        id: req.currentUser!.id,
+        id: patient.id,
         status: StatusType.Cancelled
     };
 
@@ -26,4 +33,4 @@ router.patch("/api/appointment/cancel", upload.none(), requireAuth, async (req: 
     res.status(200).send({ status: 200, appointment, success: true });
 
 });
-export { router as cancel_appointment_router };
+export { router as patient_cancel_appointment_router };

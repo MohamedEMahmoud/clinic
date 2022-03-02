@@ -1,11 +1,17 @@
 import express, { Request, Response } from "express";
 import { User } from "../../models/user.model";
 import { Appointment } from "../../models/appointment.model";
-import { requireAuth, BadRequestError, upload, StatusType } from "@clinic-services/common";
+import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
 
 const router = express.Router();
 
-router.post("/api/appointment/book", upload.none(), requireAuth, async (req: Request, res: Response) => {
+router.post("/api/appointment/patient/book", upload.none(), requireAuth, async (req: Request, res: Response) => {
+
+    const patient = await User.findById(req.currentUser!.id);
+
+    if (!patient || patient.role !== RoleType.Patient) {
+        throw new BadRequestError("You don't have this permission");
+    }
 
     if (!req.query.doctorId) {
         throw new BadRequestError("Doctor ID is required");
@@ -21,23 +27,13 @@ router.post("/api/appointment/book", upload.none(), requireAuth, async (req: Req
         throw new BadRequestError("description must be provided");
     }
 
-    if (!req.body.date) {
-        throw new BadRequestError("date must be provided");
-    }
-
-    if (!req.body.start_time) {
-        throw new BadRequestError("start time must be provided");
-    }
-
     const appointment = Appointment.build({
         doctor: doctor.id,
-        patient: req.currentUser!.id,
-        date: new Date(req.body.date).toDateString(),
-        start_time: req.body.start_time,
+        patient: patient.id,
         description: req.body.description,
         dataStatus: {
-            id: req.currentUser!.id,
-            status: StatusType.Waiting
+            id: patient.id,
+            status: StatusType.Reserved
         }
     });
 
@@ -46,4 +42,4 @@ router.post("/api/appointment/book", upload.none(), requireAuth, async (req: Req
     res.status(201).send({ status: 201, appointment, success: true });
 
 });
-export { router as book_appointment_router };
+export { router as patient_book_appointment_router };

@@ -1,12 +1,19 @@
 import express, { Request, Response } from "express";
 import { Appointment } from "../../models/appointment.model";
-import { requireAuth, BadRequestError, upload } from "@clinic-services/common";
+import { User } from "../../models/user.model";
+import { requireAuth, BadRequestError, upload, RoleType } from "@clinic-services/common";
 
 const router = express.Router();
 
-router.get("/api/appointment/show", upload.none(), requireAuth, async (req: Request, res: Response) => {
+router.get("/api/appointment/patient/show", upload.none(), requireAuth, async (req: Request, res: Response) => {
 
-    const appointments = await Appointment.find({ patient: req.currentUser!.id });
+    const patient = await User.findById(req.currentUser!.id);
+
+    if (!patient || patient.role !== RoleType.Patient) {
+        throw new BadRequestError("You don't have this permission");
+    }
+
+    const appointments = await Appointment.find({ patient: patient.id });
 
     if (appointments.length === 0) {
         throw new BadRequestError("Appointments Not Found");
@@ -15,4 +22,4 @@ router.get("/api/appointment/show", upload.none(), requireAuth, async (req: Requ
     res.status(200).send({ status: 200, appointments, success: true });
 
 });
-export { router as show_appointment_router };
+export { router as patient_show_appointment_router };
