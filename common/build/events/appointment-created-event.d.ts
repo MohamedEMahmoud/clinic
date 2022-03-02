@@ -7,5 +7,6 @@ export interface AppointmentCreatedEvent {
         patientId?: string;
         date?: string;
         start_time?: string;
+        patientPhone?: string;
     };
 }
