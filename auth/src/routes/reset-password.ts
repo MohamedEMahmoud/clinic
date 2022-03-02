@@ -41,13 +41,13 @@ router.patch("/api/auth/reset", upload.none(), async (req: Request, res: Respons
         throw new BadRequestError("Password Is Required");
     }
 
-    // const userData = await user.save();
-    // if (userData) {
-    //     await new UserUpdatedPublisher(natsWrapper.client).publish({
-    //         id: user.id,
-    //         version: user.version
-    //     });
-    // }
+    const userData = await user.save();
+    if (userData) {
+        await new UserUpdatedPublisher(natsWrapper.client).publish({
+            id: user.id,
+            version: user.version
+        });
+    }
 
     res.status(200).send({ status: 200, user, message: "success reset password", success: true, });
 
