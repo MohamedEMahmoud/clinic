@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
 import { natsWrapper } from "./nats-wrapper";
 import { app } from './app';
+import { UserCreatedListener } from "./events/listeners/user-created-listener";
+import { UserUpdatedListener } from "./events/listeners/user-updated-listener";
+import { UserDeletedListener } from "./events/listeners/user-deleted-listener";
 
 (async () => {
-  const Environment = ['MONGO_URI', "JWT_KEY", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
+  const Environment = ["PORT", "MONGO_URI", "JWT_KEY", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
   Environment.forEach(el => {
     if (!process.env[el]) {
       throw new Error(`${el} Must Be Defined`);
@@ -18,6 +21,10 @@ import { app } from './app';
     });
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    new UserCreatedListener(natsWrapper.client).listen();
+    new UserUpdatedListener(natsWrapper.client).listen();
+    new UserDeletedListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true, useUnifiedTopology: true } as mongoose.ConnectOptions);
     mongoose.Promise = global.Promise;
