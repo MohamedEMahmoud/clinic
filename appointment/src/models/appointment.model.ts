@@ -4,11 +4,11 @@ import { StatusType } from "@clinic-services/common";
 interface AppointmentAttrs {
     doctor: string;
     patient?: string;
-    date: string;
-    start_time: string;
+    date?: string;
+    start_time?: string;
     end_time?: string;
-    description: string;
-    dataStatus: { id: string; status: StatusType; };
+    description?: string;
+    dataStatus?: { id: string; status: StatusType; };
 }
 
 interface AppointmentDoc extends mongoose.Document {
@@ -19,6 +19,7 @@ interface AppointmentDoc extends mongoose.Document {
     end_time: string;
     description: string;
     dataStatus: { id: string; status: StatusType; };
+    reschedule: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -38,7 +39,6 @@ const appointmentSchema = new mongoose.Schema({
     },
     date: {
         type: String,
-        required: true
     },
     start_time: {
         type: String,
@@ -51,16 +51,21 @@ const appointmentSchema = new mongoose.Schema({
         trim: true,
         max: 100,
     },
+    reschedule: {
+        type: Boolean,
+        default: false,
+    },
     dataStatus: {
         id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true
         },
         status: {
             type: String,
+            required: true,
+            trim: true,
+            lowercase: true,
             enum: Object.values(StatusType),
-            required: true
         }
     }
 }, {
@@ -69,7 +74,9 @@ const appointmentSchema = new mongoose.Schema({
             ret.id = ret._id;
             delete ret._id;
         }
-    }
+    },
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+    versionKey: false
 });
 
 const Appointment = mongoose.model<AppointmentDoc, AppointmentModel>('Appointment', appointmentSchema);
