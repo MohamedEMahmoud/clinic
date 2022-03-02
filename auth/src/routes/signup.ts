@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { validateRequest, BadRequestError, validateImage, upload, GenderType, PictureType, RoleType } from "@clinic-services/common";
+import { validateRequest, BadRequestError, validateImage, upload, GenderType, PictureType } from "@clinic-services/common";
 import { User } from "../models/user.model";
 import jwt from "jsonwebtoken";
 import { v2 as Cloudinary } from "cloudinary";
@@ -164,17 +164,19 @@ router.post("/api/auth/signup",
             } else {
                 user.activeKey = activeKey;
                 const userData = await user.save();
-                // if (userData) {
-                //     await new UserCreatedPublisher(natsWrapper.client).publish({
-                //         id: userData.id,
-                //         email: userData.email,
-                //         role: userData.role,
-                //         picture: userData.picture,
-                //         rate: userData.rate,
-                //         availableDates: userData.availableDates
-                //         version: userData.version
-                //     });
-                // }
+                if (userData) {
+                    await new UserCreatedPublisher(natsWrapper.client).publish({
+                        id: userData.id,
+                        email: userData.email,
+                        username: userData.username,
+                        age: userData.age,
+                        role: userData.role,
+                        specialization: userData.specialization,
+                        phone: userData.phone,
+                        picture: userData.picture,
+                        version: userData.version
+                    });
+                }
 
                 res.status(201).send({ status: 201, user, success: true });
             }
