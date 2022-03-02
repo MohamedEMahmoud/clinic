@@ -100,27 +100,27 @@ router.patch("/api/auth/user",
 
         _.extend(user, req.body);
 
-        const savedData = await user.save();
+        const userData = await user.save();
 
-        // if (savedData) {
+        if (userData) {
 
-        //     const bodyData: { [key: string]: string; } = {};
-            
-        //     _.each(req.body, (value, key: string) => {
-        //         const fields = ["email", "picture", "availableDates"];
-        //         fields.forEach(el => {
-        //             if (key === el) {
-        //                 bodyData[key] = value;
-        //             }
-        //         });
-        //     });
+            const bodyData: { [key: string]: string; } = {};
 
-        //     await new UserUpdatedPublisher(natsWrapper.client).publish({
-        //         id: savedData.id,
-        //         ...bodyData,
-        //         version: savedData.version
-        //     });
-        // }
+            _.each(req.body, (value, key: string) => {
+                const fields = ["username", "email", "picture", "specialization", "phone", "age"];
+                fields.forEach(el => {
+                    if (key === el) {
+                        bodyData[key] = value;
+                    }
+                });
+            });
+
+            await new UserUpdatedPublisher(natsWrapper.client).publish({
+                id: userData.id,
+                ...bodyData,
+                version: userData.version
+            });
+        }
 
         res.status(200).send({ status: 200, user, success: true });
     });
