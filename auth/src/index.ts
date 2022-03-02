@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 import { v2 as Cloudinary } from 'cloudinary';
 import { natsWrapper } from "./nats-wrapper";
 import { app } from './app';
+import { AppointmentCreatedListener } from "./events/listeners/appointment-created-listener";
 
 (async () => {
-  const Environment = ['MONGO_URI', "JWT_KEY", "CLOUDINARY_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
+  const Environment = ["PORT", "MONGO_URI", "JWT_KEY", "CLOUDINARY_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
   Environment.forEach(el => {
     if (!process.env[el]) {
       throw new Error(`${el} Must Be Defined`);
@@ -23,6 +24,8 @@ import { app } from './app';
     await mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true, useUnifiedTopology: true } as mongoose.ConnectOptions);
     mongoose.Promise = global.Promise;
     console.log('Connection to Mongodb Successfully! From Auth Service');
+
+    new AppointmentCreatedListener(natsWrapper.client).listen();
 
     Cloudinary.config({
       cloud_name: process.env.CLOUDINARY_NAME,
