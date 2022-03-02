@@ -99,12 +99,12 @@ router.patch("/api/auth/resend", async (req: Request, res: Response) => {
             }
 
             const userData = await user.save();
-            // if (userData) {
-            //     await new UserUpdatedPublisher(natsWrapper.client).publish({
-            //         id: user.id,
-            //         version: user.version
-            //     });
-            // }
+            if (userData) {
+                await new UserUpdatedPublisher(natsWrapper.client).publish({
+                    id: user.id,
+                    version: user.version
+                });
+            }
 
             res.status(200).send({ status: 200, user, message: "Email Sent", success: true });
         }
