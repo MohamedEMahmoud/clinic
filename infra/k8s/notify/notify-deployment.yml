@@ -1,4 +1,5 @@
-apiVersion: app/v1
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: notify-deployment
 spec:
@@ -25,3 +26,12 @@ spec:
                   fieldPath: metadata.name
             - name: NATS_URL
               value: http://nats-cluster-ip-service:4222
+            - name: TWILIO_ACCOUNT_SID
+              value: AC40964f75d8df8dc8dfe1e787ce877eb3
+            - name: TWILIO_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: twilio-auth-token
+                  key: TWILIO_AUTH_TOKEN
+            - name: TWILIO_PHONE_NUMBER
+              value: "+18623226948"
