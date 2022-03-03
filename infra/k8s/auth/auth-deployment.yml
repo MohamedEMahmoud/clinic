@@ -61,4 +61,6 @@ spec:
             - name: NATS_URL
               value: http://nats-cluster-ip-service:4222
             - name: PORT
-              value: 3000
+              value: "3e3"
+            - name: RESET_PASSWORD_EXPIRATION_KEY
+              value: "36e5"
