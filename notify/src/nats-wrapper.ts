@@ -4,7 +4,7 @@ class NatsWrapper {
     private _client?: Stan;
     get client() {
         if (!this._client) {
-            throw new Error("Can Not Access NATS Client Before Connecting From Auth Service");
+            throw new Error("Can Not Access NATS Client Before Connecting From Notify Service");
         }
         return this._client;
     }
@@ -12,7 +12,7 @@ class NatsWrapper {
         this._client = nats.connect(clusterId, clientId, { url });
         return new Promise((resolve, reject) => {
             this._client!.on('connect', () => {
-                console.log("Connected To NATS From Auth Service");
+                console.log("Connected To NATS From Notify Service");
                 resolve();
             });
             this._client!.on('error', (err) => reject(err));

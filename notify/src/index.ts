@@ -2,7 +2,7 @@ import { AppointmentCreatedListener } from "./events/listeners/appointment-creat
 import { natsWrapper } from "./nats-wrapper";
 
 (async () => {
-  const Environment = ["REDIS_HOST", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
+  const Environment = ["REDIS_HOST", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL", "TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_PHONE_NUMBER"];
   Environment.forEach(el => {
     if (!process.env[el]) {
       throw new Error(`${el} Must Be Defined`);
@@ -12,7 +12,7 @@ import { natsWrapper } from "./nats-wrapper";
   try {
     await natsWrapper.connect(process.env.NATS_CLUSTER_ID!, process.env.NATS_CLIENT_ID!, process.env.NATS_URL!);
     natsWrapper.client.on("close", () => {
-      console.log("NATS connection closed! from Auth service");
+      console.log("NATS connection closed! from Notify service");
       process.exit();
     });
     process.on("SIGINT", () => natsWrapper.client.close());
