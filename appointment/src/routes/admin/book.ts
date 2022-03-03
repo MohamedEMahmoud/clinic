@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { User } from "../../models/user.model";
 import { Appointment } from "../../models/appointment.model";
 import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -13,10 +14,20 @@ router.post("/api/appointment/admin/book", upload.none(), requireAuth, async (re
         throw new BadRequestError("You don't have this permission");
     }
 
+    const { isValid } = mongoose.Types.ObjectId;
+
+    if (!req.query.doctorId || !isValid(String(req.query.doctorId))) {
+        throw new BadRequestError("Doctor ID is invalid");
+    }
+
     const doctor = await User.findById(req.query.doctorId);
 
     if (!doctor || doctor.role !== RoleType.Doctor) {
         throw new BadRequestError("Doctor Not Found");
+    }
+
+    if (!req.query.patientId || !isValid(String(req.query.patientId))) {
+        throw new BadRequestError("Patient ID is invalid");
     }
 
     const patient = await User.findById(req.query.patientId);
@@ -35,6 +46,10 @@ router.post("/api/appointment/admin/book", upload.none(), requireAuth, async (re
 
     if (!req.body.start_time) {
         throw new BadRequestError("start time must be provided");
+    }
+
+    if (new Date(`${req.body.date} ${req.body.start_time}`) < new Date()) {
+        throw new BadRequestError("Invalid date");
     }
 
     const appointment = Appointment.build({

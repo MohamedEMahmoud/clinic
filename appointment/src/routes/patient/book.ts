@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { User } from "../../models/user.model";
 import { Appointment } from "../../models/appointment.model";
 import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
-
+import mongoose from "mongoose";
 const router = express.Router();
 
 router.post("/api/appointment/patient/book", upload.none(), requireAuth, async (req: Request, res: Response) => {
@@ -13,8 +13,10 @@ router.post("/api/appointment/patient/book", upload.none(), requireAuth, async (
         throw new BadRequestError("You don't have this permission");
     }
 
-    if (!req.query.doctorId) {
-        throw new BadRequestError("Doctor ID is required");
+    const { isValid } = mongoose.Types.ObjectId;
+    
+    if (!req.query.doctorId || !isValid(String(req.query.doctorId))) {
+        throw new BadRequestError("Doctor ID is invalid");
     }
 
     const doctor = await User.findById(req.query.doctorId);

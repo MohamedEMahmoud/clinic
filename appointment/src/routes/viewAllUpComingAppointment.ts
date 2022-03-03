@@ -2,10 +2,11 @@ import express, { Request, Response } from "express";
 import { Appointment } from "../models/appointment.model";
 import { User } from "../models/user.model";
 import { requireAuth, BadRequestError, RoleType } from "@clinic-services/common";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
-router.get("/api/appointment/view", requireAuth, async (req: Request, res: Response) => {
+router.get("/api/appointment/view-upcoming", requireAuth, async (req: Request, res: Response) => {
 
     const user = await User.findById(req.currentUser!.id);
 
@@ -16,8 +17,11 @@ router.get("/api/appointment/view", requireAuth, async (req: Request, res: Respo
     let appointments;
 
     if (user.role === RoleType.Admin) {
-        if (!req.query.doctorId) {
-            throw new BadRequestError("Doctor Id must be provided");
+
+        const { isValid } = mongoose.Types.ObjectId;
+
+        if (!req.query.doctorId || !isValid(String(req.query.doctorId))) {
+            throw new BadRequestError("Doctor ID is invalid");
         }
 
         const doctor = await User.findById(req.query.doctorId);
@@ -31,11 +35,11 @@ router.get("/api/appointment/view", requireAuth, async (req: Request, res: Respo
         appointments = await Appointment.find({ doctor: user.id });
     }
 
+    appointments = appointments.filter(appointment => new Date(appointment.date).getDate() === new Date().getDate() || new Date(appointment.date) > new Date() || !appointment.end_time);
+
     if (appointments.length === 0) {
         throw new BadRequestError("Appointments Not Found");
     }
-
-    appointments = appointments.filter(appointment => new Date(appointment.date).getDate() === new Date().getDate() || new Date(appointment.date) > new Date());
 
     res.status(200).send({ status: 200, appointments, success: true });
 

@@ -62,7 +62,6 @@ const appointmentSchema = new mongoose.Schema({
         },
         status: {
             type: String,
-            required: true,
             trim: true,
             lowercase: true,
             enum: Object.values(StatusType),
@@ -78,6 +77,8 @@ const appointmentSchema = new mongoose.Schema({
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
     versionKey: false
 });
+
+appointmentSchema.statics.build = (attrs: AppointmentAttrs) => new Appointment(attrs);
 
 const Appointment = mongoose.model<AppointmentDoc, AppointmentModel>('Appointment', appointmentSchema);
 

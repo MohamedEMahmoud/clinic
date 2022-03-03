@@ -35,7 +35,7 @@ import { UserDeletedListener } from "./events/listeners/user-deleted-listener";
     console.log(e);
   }
 
-  const PORT = 3000;
-  app.listen(PORT, () => console.log(`Server Listening On Port 3000! From Appointment Service`));
+  const PORT = 3000 || Number(process.env.PORT);
+  app.listen(PORT, () => console.log(`Server Listening On Port ${PORT} From Appointment Service`));
 })();
 

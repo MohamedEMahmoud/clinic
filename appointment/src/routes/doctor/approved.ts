@@ -4,6 +4,7 @@ import { User } from "../../models/user.model";
 import { requireAuth, BadRequestError, StatusType, RoleType } from "@clinic-services/common";
 import { AppointmentCreatedPublisher } from "../../events/publishers/appointment-created-publisher";
 import { natsWrapper } from "../../nats-wrapper";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -15,21 +16,23 @@ router.patch("/api/appointment/doctor/approved", requireAuth, async (req: Reques
         throw new BadRequestError("You don't have this permission");
     }
 
+    const { isValid } = mongoose.Types.ObjectId;
+
+    if (!req.query.patientId || !isValid(String(req.query.patientId))) {
+        throw new BadRequestError("Patient ID is invalid");
+    }
+
     const patient = await User.findById(req.query.patientId);
 
     if (!patient) {
         throw new BadRequestError("Patient Not Found");
     }
 
-    if (!req.query.appointmentId) {
-        throw new BadRequestError("Appointment ID is required");
+    if (!req.query.appointmentId || !isValid(String(req.query.appointmentId))) {
+        throw new BadRequestError("Appointment ID is invalid");
     }
 
-    const appointment = await Appointment.findOne({
-        id: req.query.appointmentId,
-        doctor: doctor.id,
-        patient: patient.id,
-    });
+    const appointment = await Appointment.findById(req.query.appointmentId);
 
     if (!appointment) {
         throw new BadRequestError("Appointment Not Found");
@@ -45,7 +48,6 @@ router.patch("/api/appointment/doctor/approved", requireAuth, async (req: Reques
     if (appointmentData) {
         await new AppointmentCreatedPublisher(natsWrapper.client).publish({
             id: appointmentData.id,
-            doctorId: appointmentData.doctor,
             patientId: appointmentData.patient,
             patientPhone: patient.phone,
             date: appointmentData.date,

@@ -92,7 +92,7 @@ router.patch("/api/auth/resend", async (req: Request, res: Response) => {
 
             if (req.query.service === "reset-password") {
                 user.resetPasswordKey = resendKey;
-                const time = Date.now() + 3600000;
+                const time = Date.now() + Number(process.env.RESET_PASSWORD_EXPIRATION_KEY!);
                 user.resetPasswordExpires = new Date(time).toISOString();
             } else {
                 user.activeKey = resendKey;

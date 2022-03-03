@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import { Appointment } from "../../models/appointment.model";
 import { User } from "../../models/user.model";
 import { requireAuth, BadRequestError, RoleType } from "@clinic-services/common";
+import mongoose from "mongoose";
+
 const router = express.Router();
 
 router.delete("/api/appointment/admin/delete", requireAuth, async (req: Request, res: Response) => {
@@ -12,20 +14,13 @@ router.delete("/api/appointment/admin/delete", requireAuth, async (req: Request,
         throw new BadRequestError("You don't have this permission");
     }
 
-    const doctor = await User.findById(req.query.doctorId);
+    const { isValid } = mongoose.Types.ObjectId;
 
-    if (!doctor || doctor.role !== RoleType.Doctor) {
-        throw new BadRequestError("Doctor Not Found");
+    if (!req.query.appointmentId || !isValid(String(req.query.appointmentId))) {
+        throw new BadRequestError("Appointment ID is invalid");
     }
 
-    if (!req.query.appointmentId) {
-        throw new BadRequestError("Appointment ID is required");
-    }
-
-    const appointment = await Appointment.findOne({
-        id: req.query.appointmentId,
-        doctor: doctor.id,
-    });
+    const appointment = await Appointment.findById(req.query.appointmentId);
 
     if (!appointment) {
         throw new BadRequestError("Appointment Not Found");

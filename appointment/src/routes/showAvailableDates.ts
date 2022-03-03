@@ -6,17 +6,17 @@ import mongoose from "mongoose";
 
 const router = express.Router();
 
-router.get("/api/appointment/view-all", requireAuth, async (req: Request, res: Response) => {
+router.get("/api/appointment/show-available", requireAuth, async (req: Request, res: Response) => {
 
     const user = await User.findById(req.currentUser!.id);
 
-    if (!user || user.role === RoleType.Patient) {
+    if (!user) {
         throw new BadRequestError("You don't have this permission");
     }
 
     let appointments;
 
-    if (user.role === RoleType.Admin) {
+    if (user.role === RoleType.Admin || user.role === RoleType.Patient) {
 
         const { isValid } = mongoose.Types.ObjectId;
 
@@ -35,8 +35,8 @@ router.get("/api/appointment/view-all", requireAuth, async (req: Request, res: R
         appointments = await Appointment.find({ doctor: user.id });
     }
 
-    appointments = appointments.filter(appointment => !appointment.end_time);
-    
+    appointments = appointments.filter(appointment => appointment.end_time);
+
     if (appointments.length === 0) {
         throw new BadRequestError("Appointments Not Found");
     }
@@ -44,4 +44,4 @@ router.get("/api/appointment/view-all", requireAuth, async (req: Request, res: R
     res.status(200).send({ status: 200, appointments, success: true });
 
 });
-export { router as view_all_appointments_router };
+export { router as show_all_available_dates_router };

@@ -78,7 +78,7 @@ router.patch("/api/auth/user",
         if (files.picture) {
             await new Promise((resolve, reject) => {
                 Cloudinary.uploader.upload_stream({
-                    public_id: `profile-picture/social-${user.username}`,
+                    public_id: `profile-picture/clinic-${user.username}`,
                     use_filename: true,
                     tags: `${user.username}-tag`,
                     width: 500,

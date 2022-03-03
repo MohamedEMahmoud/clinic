@@ -9,21 +9,24 @@ export class AppointmentCreatedListener extends Listener<AppointmentCreatedEvent
     queueGroupName = queueGroupName;
     async onMessage(data: AppointmentCreatedEvent["data"], msg: Message) {
 
-        const doctor = await User.findById(data.doctor);
+        if (data.doctorId) {
+            const doctor = await User.findById(data.doctorId);
 
-        if (!doctor) {
-            throw new Error("Doctor Not Found");
-        }
+            if (!doctor) {
+                throw new Error("Doctor Not Found");
+            }
 
-        doctor.availableDates = [...doctor.availableDates, data.id];
+            doctor.availableDates = [...doctor.availableDates, data.id];
 
-        const doctorData = await doctor.save();
+            const doctorData = await doctor.save();
 
-        if (doctorData) {
-            await new UserUpdatedPublisher(this.client).publish({
-                id: doctor.id,
-                version: doctor.version
-            });
+            if (doctorData) {
+                await new UserUpdatedPublisher(this.client).publish({
+                    id: doctor.id,
+                    availableDate: data.id,
+                    version: doctor.version
+                });
+            }
         }
 
         msg.ack();

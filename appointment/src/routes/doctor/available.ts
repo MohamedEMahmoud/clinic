@@ -28,7 +28,7 @@ router.post("/api/appointment/doctor/available", upload.none(), requireAuth, asy
 
     const appointment = Appointment.build({
         doctor: doctor.id,
-        date: new Date(req.body.date).toDateString(),
+        date: /\d/.test(req.body.date) ? new Date(req.body.date).toDateString().slice(0, 3) : req.body.date,
         start_time: req.body.start_time,
         end_time: req.body.end_time,
     });
@@ -43,8 +43,8 @@ router.post("/api/appointment/doctor/available", upload.none(), requireAuth, asy
 
         if (doctorData) {
             await new AppointmentCreatedPublisher(natsWrapper.client).publish({
-                id: appointment.id,
-                doctorId: doctor.id
+                id: appointmentData.id,
+                doctorId: doctorData.id
             });
         }
     }

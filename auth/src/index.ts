@@ -5,7 +5,7 @@ import { app } from './app';
 import { AppointmentCreatedListener } from "./events/listeners/appointment-created-listener";
 
 (async () => {
-  const Environment = ["PORT", "MONGO_URI", "JWT_KEY", "CLOUDINARY_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
+  const Environment = ["PORT", "MONGO_URI", "JWT_KEY", "RESET_PASSWORD_EXPIRATION_KEY", "CLOUDINARY_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET", "NATS_CLUSTER_ID", "NATS_CLIENT_ID", "NATS_URL"];
   Environment.forEach(el => {
     if (!process.env[el]) {
       throw new Error(`${el} Must Be Defined`);
@@ -38,7 +38,7 @@ import { AppointmentCreatedListener } from "./events/listeners/appointment-creat
     console.log(e);
   }
 
-  const PORT = 3000 || process.env.PORT;
+  const PORT = 3000 || Number(process.env.PORT);
   app.listen(PORT, () => console.log(`Server Listening On Port ${PORT} From Auth Service`));
 })();
 

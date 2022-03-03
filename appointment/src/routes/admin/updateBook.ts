@@ -3,6 +3,8 @@ import { Appointment } from "../../models/appointment.model";
 import { User } from "../../models/user.model";
 import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
 import _ from "lodash";
+import mongoose from "mongoose";
+
 const router = express.Router();
 
 router.patch("/api/appointment/admin/update-book", upload.none(), requireAuth, async (req: Request, res: Response) => {
@@ -13,8 +15,10 @@ router.patch("/api/appointment/admin/update-book", upload.none(), requireAuth, a
         throw new BadRequestError("You don't have this permission");
     }
 
-    if (!req.query.appointmentId) {
-        throw new BadRequestError("Appointment ID is required");
+    const { isValid } = mongoose.Types.ObjectId;
+
+    if (!req.query.appointmentId || !isValid(String(req.query.appointmentId))) {
+        throw new BadRequestError("Appointment ID is invalid");
     }
 
     const appointment = await Appointment.findById(req.query.appointmentId);
@@ -23,11 +27,14 @@ router.patch("/api/appointment/admin/update-book", upload.none(), requireAuth, a
         throw new BadRequestError("Appointment Not Found");
     }
 
-    if (req.body.date) {
-        appointment.date = new Date(req.body.date).toDateString();
+    if (new Date(`${req.body.date} ${req.body.start_time}`) < new Date()) {
+        throw new BadRequestError("Invalid date");
     }
-
     _.extend(appointment, req.body);
+
+    if (req.body.date) {
+        appointment.date = new Date(appointment.date).toDateString();
+    }
 
     appointment.dataStatus = {
         id: admin.id,

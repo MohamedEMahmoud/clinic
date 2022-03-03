@@ -16,7 +16,12 @@ export class UserUpdatedListener extends Listener<UserUpdatedEvent> {
 
         let fields: { [key: string]: any; } = { ...data };
 
+        if (fields.availableDate) {
+            user.availableDates = [...user.availableDates, fields.availableDate];
+        }
+
         delete fields["version"];
+        delete fields["availableDate"];
 
         user.set({ ...fields });
 

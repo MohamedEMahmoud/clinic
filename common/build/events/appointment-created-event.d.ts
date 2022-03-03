@@ -3,7 +3,7 @@ export interface AppointmentCreatedEvent {
     subject: Subjects.AppointmentCreated;
     data: {
         id: string;
-        doctorId: string;
+        doctorId?: string;
         patientId?: string;
         date?: string;
         start_time?: string;

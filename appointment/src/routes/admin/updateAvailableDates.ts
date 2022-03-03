@@ -3,10 +3,11 @@ import { User } from "../../models/user.model";
 import { Appointment } from "../../models/appointment.model";
 import { requireAuth, BadRequestError, upload, RoleType } from "@clinic-services/common";
 import _ from "lodash";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
-router.patch("/api/appointment/admin/available", upload.none(), requireAuth, async (req: Request, res: Response) => {
+router.patch("/api/appointment/admin/update-available", upload.none(), requireAuth, async (req: Request, res: Response) => {
 
     const admin = await User.findById(req.currentUser!.id);
 
@@ -14,29 +15,27 @@ router.patch("/api/appointment/admin/available", upload.none(), requireAuth, asy
         throw new BadRequestError("You don't have this permission");
     }
 
-    const doctor = await User.findById(req.query.doctorId);
-    if (!doctor || doctor.role !== RoleType.Doctor) {
-        throw new BadRequestError("Doctor Not Found");
+    const { isValid } = mongoose.Types.ObjectId;
+
+    if (!req.query.appointmentId || !isValid(String(req.query.appointmentId))) {
+        throw new BadRequestError("Appointment ID is invalid");
     }
 
-    if (!req.query.appointmentId) {
-        throw new BadRequestError("Appointment Id must be provided");
-    }
-
-    const appointment = await Appointment.findOne({
-        id: req.query.appointmentId,
-        doctor: doctor.id,
-    });
+    const appointment = await Appointment.findById(req.query.appointmentId);
 
     if (!appointment) {
         throw new BadRequestError("Appointment Not Found");
     }
 
-    if (req.body.date) {
-        appointment.date = new Date(req.body.date).toDateString();
+    if (new Date(`${req.body.date} ${req.body.start_time}`) < new Date()) {
+        throw new BadRequestError("Invalid date");
     }
 
     _.extend(appointment, req.body);
+
+    if (req.body.date) {
+        appointment.date = /\d/.test(req.body.date) ? new Date(appointment.date).toDateString().slice(0, 3) : req.body.date;
+    }
 
     await appointment.save();
 
@@ -44,4 +43,4 @@ router.patch("/api/appointment/admin/available", upload.none(), requireAuth, asy
 
 });
 
-export { router as admin_update_availableDates_router };
+export { router as admin_update_available_dates_router };

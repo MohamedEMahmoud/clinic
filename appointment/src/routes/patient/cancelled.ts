@@ -1,11 +1,12 @@
 import express, { Request, Response } from "express";
 import { Appointment } from "../../models/appointment.model";
 import { User } from "../../models/user.model";
-import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
+import { requireAuth, BadRequestError, StatusType, RoleType } from "@clinic-services/common";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
-router.patch("/api/appointment/patient/cancel", upload.none(), requireAuth, async (req: Request, res: Response) => {
+router.patch("/api/appointment/patient/cancelled", requireAuth, async (req: Request, res: Response) => {
 
     const patient = await User.findById(req.currentUser!.id);
 
@@ -13,8 +14,10 @@ router.patch("/api/appointment/patient/cancel", upload.none(), requireAuth, asyn
         throw new BadRequestError("You don't have this permission");
     }
 
-    if (!req.query.appointmentId) {
-        throw new BadRequestError("Appointment ID is required");
+    const { isValid } = mongoose.Types.ObjectId;
+
+    if (!req.query.appointmentId || !isValid(String(req.query.appointmentId))) {
+        throw new BadRequestError("Appointment ID is invalid");
     }
 
     const appointment = await Appointment.findById(req.query.appointmentId);
@@ -33,4 +36,4 @@ router.patch("/api/appointment/patient/cancel", upload.none(), requireAuth, asyn
     res.status(200).send({ status: 200, appointment, success: true });
 
 });
-export { router as patient_cancel_appointment_router };
+export { router as patient_cancelled_appointment_router };

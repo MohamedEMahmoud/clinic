@@ -1,11 +1,13 @@
 import express, { Request, Response } from "express";
 import { Appointment } from "../../models/appointment.model";
 import { User } from "../../models/user.model";
-import { requireAuth, BadRequestError, upload, StatusType, RoleType } from "@clinic-services/common";
+import { requireAuth, BadRequestError, RoleType } from "@clinic-services/common";
 import _ from "lodash";
+import mongoose from "mongoose";
+
 const router = express.Router();
 
-router.patch("/api/appointment/patient/reschedule", upload.none(), requireAuth, async (req: Request, res: Response) => {
+router.patch("/api/appointment/patient/reschedule", requireAuth, async (req: Request, res: Response) => {
 
     const patient = await User.findById(req.currentUser!.id);
 
@@ -13,8 +15,10 @@ router.patch("/api/appointment/patient/reschedule", upload.none(), requireAuth, 
         throw new BadRequestError("You don't have this permission");
     }
 
-    if (!req.query.appointmentId) {
-        throw new BadRequestError("Appointment ID is required");
+    const { isValid } = mongoose.Types.ObjectId;
+
+    if (!req.query.appointmentId || !isValid(String(req.query.appointmentId))) {
+        throw new BadRequestError("Appointment ID is invalid");
     }
 
     const appointment = await Appointment.findById(req.query.appointmentId);
