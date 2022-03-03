@@ -32,4 +32,4 @@ spec:
             - name: NATS_URL
               value: http://nats-cluster-ip-service:4222
             - name: PORT
-              value: 3000
+              value: "3e3"
